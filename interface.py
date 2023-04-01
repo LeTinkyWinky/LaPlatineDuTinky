@@ -61,6 +61,10 @@ class VinylSwitch:
         self.canvas.create_polygon(80, 120, 80, 10, 0, 40, -24, 180, 80, 120, 80, 240, 153, 203, 187, 126, 174, 66, fill="black")
         self.canvas.create_oval(55, 95, 105, 145, fill="#F5C110", outline="#B59644")
         self.canvas.create_oval(77, 117, 83, 123, fill="#0A062E", outline="#B59644")
+        self.arm = [
+            self.canvas.create_line(230, 210, 230, 40, width=7, fill="#3D3F75"),
+            self.canvas.create_polygon(*(217, 28), *(220, 23), *(226, 24), *(235, 43), *(225, 47), fill="#585AA8")
+        ]
 
 
     def place(self, x, y, anchor="nw"):
@@ -70,8 +74,24 @@ class VinylSwitch:
         self.state = not self.state
         if self.state:
             self.function_on()
+            for i in range(30):
+                angle = pi/7/30*i
+                self.canvas.after(int(i/100*1000), lambda a=angle: self.canvas.coords(self.arm[0], 230, 210, 230-sin(a)*170, 40+170-cos(a)*170))
+                self.canvas.after(int(i/100*1000), lambda a=angle: self.canvas.coords(self.arm[1], *get_rot(217, 28, 230, 210, a),
+                                                                                                   *get_rot(220, 23, 230, 210, a),
+                                                                                                   *get_rot(226, 24, 230, 210, a),
+                                                                                                   *get_rot(235, 43, 230, 210, a),
+                                                                                                   *get_rot(225, 47, 230, 210, a)))
         else:
             self.function_off()
+            for i in range(30):
+                angle = pi/7-pi/7/30*(i+1)
+                self.canvas.after(int(i/100*1000), lambda a=angle: self.canvas.coords(self.arm[0], 230, 210, 230-sin(a)*170, 40+170-cos(a)*170))
+                self.canvas.after(int(i/100*1000), lambda a=angle: self.canvas.coords(self.arm[1], *get_rot(217, 28, 230, 210, a),
+                                                                                                   *get_rot(220, 23, 230, 210, a),
+                                                                                                   *get_rot(226, 24, 230, 210, a),
+                                                                                                   *get_rot(235, 43, 230, 210, a),
+                                                                                                   *get_rot(225, 47, 230, 210, a)))
 
     def destroy(self):
         self.canvas.destroy()
