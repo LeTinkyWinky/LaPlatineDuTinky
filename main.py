@@ -43,7 +43,7 @@ if __name__ == '__main__':
             # print(config["user_id"], '\n', i.voice_states.keys())
             if config["owner_id"] in i.voice_states.keys():
                 print(f"Connect to {i}")
-                #vc = await i.connect()
+                vc = await i.connect()
                 connected = True
                 print(f"Connected to {i}")
                 await play_audio_in_voice()
@@ -74,9 +74,9 @@ if __name__ == '__main__':
 
     async def play_audio_in_voice():
         vc.play(PyAudioPCM(), after=lambda e: print(f'Player error: {e}') if e else None)
-        switch = Switch(window, function_on=vc.resume, function_off=vc.pause)
-        switch.switch(0)
-        switch.place(x=50, y=50)
+        vinylswitch.switch()
+        vinylswitch.function_on = vc.resume
+        vinylswitch.function_off = vc.pause
 
 
     @async_handler
