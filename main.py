@@ -81,7 +81,11 @@ if __name__ == '__main__':
 
     @async_handler
     async def client_start():
-        await client.start(config["token"])
+        try:
+            await client.start(config["token"])
+        except:
+            Label(window, text="Erreur lors de la connexion avec le token\nVérifiez le token et redémarrez", fg="red")\
+                .place(x=400, y=175, anchor='c')
 
 
     window.after(0, client_start)
