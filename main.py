@@ -91,4 +91,3 @@ if __name__ == '__main__':
     window.after(0, client_start)
 
     async_mainloop(window)
-
