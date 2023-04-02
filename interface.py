@@ -4,7 +4,7 @@ from utilitaries import *
 
 
 class Switch:
-    def __init__(self, root, function_on=f_pass, function_off=f_pass):
+    def __init__(self, root, function_on=f_pass, function_off=f_pass, text=""):
         self.state = False
         self.function_on, self.function_off = function_on, function_off
         self.canvas = Canvas(root, bg="#0A062E", relief="flat", highlightbackground="#0A062E", width=30, height=20)
@@ -20,9 +20,15 @@ class Switch:
         ]
         self.button = self.canvas.create_oval(4, 4, 18, 18, fill="#DDE0F5", width="0")
         self.canvas.bind("<Button-1>", self.switch)
+        self.label = Label(text=text, font=("System", 16), fg="#DFDBED", bg="#0A062E")
 
     def place(self, x, y, anchor="nw"):
-        self.canvas.place(x=x, y=y, anchor=anchor)
+        if anchor in ("nw", "w", "sw"):
+            self.canvas.place(x=x, y=y, anchor=anchor)
+            self.label.place(x=x+35, y=y, anchor=anchor)
+        else:
+            self.canvas.place(x=x, y=y, anchor="nw")
+            self.label.place(x=x+35, y=y, anchor="nw")
 
     def switch(self, e=0):
         self.state = not self.state
