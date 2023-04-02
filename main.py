@@ -42,6 +42,9 @@ if __name__ == '__main__':
                 voice_status_label.config(text="Connected to no voice channel")
             else:
                 voice_status_label.config(text="Connected to " + after.channel.name)
+        elif config["follow_owner"] and member.id == config["owner_id"]:
+            if before.channel != after.channel:
+                await connect_to_owner()
 
 
     @client.event
@@ -119,6 +122,13 @@ if __name__ == '__main__':
     switch_auto_connect = Switch(window, text="Auto connect to owner's voice channel on startup", function_on=lambda: f_switch_auto_connect(1), function_off=lambda: f_switch_auto_connect(0))
     if config["auto_connect"]: switch_auto_connect.switch()
     switch_auto_connect.place(x=400, y=100)
+
+    def f_switch_follow_owner(state):
+        config["follow_owner"] = state
+
+    switch_follow_owner = Switch(window, text="Follow owner if he changes voice channel", function_on=lambda: f_switch_follow_owner(1), function_off=lambda: f_switch_follow_owner(0))
+    if config["follow_owner"]: switch_follow_owner.switch()
+    switch_follow_owner.place(x=400, y=130)
 
     window.after(0, client_start)
 
