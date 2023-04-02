@@ -3,9 +3,9 @@ La Platine est une interface graphique pour gérer un bot discord audio.
 
 ![image](https://user-images.githubusercontent.com/104074343/229360422-10d72c52-a2e0-4963-983b-13703256e4b3.png)
 
-Pour faire fonctionner la Platine, veillez à remplir correctement le fichier `config.ini`:
+Pour faire fonctionner la Platine, veillez à remplir correctement ces 3 paramètres du fichier `config.ini`:
 
-![image](https://user-images.githubusercontent.com/104074343/229361527-cc789ee0-252e-42e0-9a3b-00606706d596.png)
+![image](https://user-images.githubusercontent.com/104074343/229365946-7413daaa-fd8c-442b-b357-4d050fa824ce.png)
 
 <br>
 
