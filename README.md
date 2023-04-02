@@ -34,7 +34,7 @@ En faisant un clic droit sur votre profil, vous pouvez désormais récupérer vo
 <br>![image](https://user-images.githubusercontent.com/104074343/229367677-beeff0fd-a641-41f6-98d4-db8798cd7e98.png)
 <br><br><br>
 #### Récupérer l'identifiant Discord du salon vocal par défaut (default_channel_id) :
-Activez le mode développeur de Discord [comme expliqué précédemment](https://github.com/CedricHombourger/LaPlatineDuTinky/edit/master/README.md#r%C3%A9cup%C3%A9rer-votre-identifiant-discord-owner_id-).
+Activez le mode développeur de Discord [comme expliqué précédemment](#r%C3%A9cup%C3%A9rer-votre-identifiant-discord-owner_id-).
 <br><br>
 En faisant un clic droit sur le salon que vous voulez définir comme par défaut pour le bot, vous pouvez récupérer son identifiant.
 <br>![image](https://user-images.githubusercontent.com/104074343/229368068-f622ca37-8d96-414f-83da-2a87f7e5563c.png)
