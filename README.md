@@ -15,13 +15,13 @@ Fonctionnalités :
 - Affiche le salon où il est connecté et le met à jour en cas de changement
 - Peut se reconnecter au salon vocal où se trouve son propriétaire en appuyant sur un bouton
 - Peut activer ou désactiver le son sortant du bot avec un switch ressemblant à un vinyle
+- Un switch permettant d'activer l'auto-connexion au salon vocal où se trouve son propriétaire
 
 <br>
 
 A faire :
 - Sélection de vinyle parmi une bibliothèque pour mettre en status discord
 - Sélection de périphérique audio (pour l'instant il utilise le microphone par défaut de l'ordinateur)
-- Un switch permettant d'activer l'auto-connexion au salon vocal où se trouve son propriétaire
 - Un switch permettant d'activer le suivi du propriétaire lorsqu'il change de salon vocal
 - Un switch permettant d'activer l'auto-play au lancement
 - Un switch permettant d'activer le mode "lite" (désactiver les animations)

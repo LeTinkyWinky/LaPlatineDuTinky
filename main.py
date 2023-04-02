@@ -51,17 +51,20 @@ if __name__ == '__main__':
         status_label.config(text="Logged in as " + client.user.name)
         print(f'\n----------------------\nLogged in as {client.user}\n----------------------\n\n')
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='des vinyles'))
-        connected = False
-        for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
-            # print(config["user_id"], '\n', i.voice_states.keys())
-            if config["owner_id"] in i.voice_states.keys():
+        if config["auto_connect"]:
+            connected = False
+            for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
+                # print(config["user_id"], '\n', i.voice_states.keys())
+                if config["owner_id"] in i.voice_states.keys():
+                    vc = await i.connect()
+                    connected = True
+                    await play_audio_in_voice()
+            if not connected:
+                i = client.get_channel(config["default_channel_id"])
                 vc = await i.connect()
-                connected = True
                 await play_audio_in_voice()
-        if not connected:
-            i = client.get_channel(config["default_channel_id"])
-            vc = await i.connect()
-            await play_audio_in_voice()
+        if not vinylswitch.state:
+            vinylswitch.switch()
         '''
         #client.loop.create_task(bg_task())
         print('\nFaites votre choix:\n')
@@ -83,8 +86,6 @@ if __name__ == '__main__':
 
     async def play_audio_in_voice():
         vc.play(PyAudioPCM(), after=lambda e: print(f'Player error: {e}') if e else None)
-        if vinylswitch.state == False:
-            vinylswitch.switch()
         vinylswitch.function_on = vc.resume
         vinylswitch.function_off = vc.pause
 
@@ -104,14 +105,25 @@ if __name__ == '__main__':
         global vc
         for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
             if config["owner_id"] in i.voice_states.keys():
-                await vc.disconnect()
+                if vc != None and vc.is_connected():
+                    await vc.disconnect()
                 vc = await i.connect()
                 await play_audio_in_voice()
 
     button_connect_to_owner = Button(text="Connect to owner's voice channel", font=("System", 15), bg="#F5C110", fg="#0A062E", relief="flat", command=connect_to_owner)
     button_connect_to_owner.place(x=10, y=90)
 
+    def f_switch_auto_connect(state):
+        config["auto_connect"] = state
+
+    switch_auto_connect = Switch(window, text="Auto connect to owner's voice channel on startup", function_on=lambda: f_switch_auto_connect(1), function_off=lambda: f_switch_auto_connect(0))
+    if config["auto_connect"]: switch_auto_connect.switch()
+    switch_auto_connect.place(x=400, y=100)
 
     window.after(0, client_start)
 
     async_mainloop(window)
+
+    with open("config.ini", 'w') as f:
+        for key in config.keys():
+            f.write(f"{key}={config[key]}\n")
