@@ -5,7 +5,6 @@ import pyaudio
 from utilitaries import *
 from async_tkinter_loop import async_mainloop, async_handler
 
-
 if __name__ == '__main__':
 
     window = Tk()
@@ -16,6 +15,10 @@ if __name__ == '__main__':
     vinylswitch.place(x=0, y=350, anchor='sw')
     window.update()
 
+    status_label = Label(text="Connexion to discord bot...", font=("System", 15), fg="#F5C110", bg="#0A062E")
+    status_label.place(x=10, y=30)
+    voice_status_label = Label(text="Connected to no voice channel", font=("System", 15), fg="#F5C110", bg="#0A062E")
+    voice_status_label.place(x=10, y=60)
 
     intents = discord.Intents().default()
     client = discord.Client(intents=intents)
@@ -33,25 +36,31 @@ if __name__ == '__main__':
 
 
     @client.event
+    async def on_voice_state_update(member, before, after):
+        if member == client.user:
+            if after.channel is None:
+                voice_status_label.config(text="Connected to no voice channel")
+            else:
+                voice_status_label.config(text="Connected to " + after.channel.name)
+
+
+    @client.event
     async def on_ready():
         global vc
         vc = None
+        status_label.config(text="Logged in as " + client.user.name)
         print(f'\n----------------------\nLogged in as {client.user}\n----------------------\n\n')
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='des vinyles'))
         connected = False
         for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
             # print(config["user_id"], '\n', i.voice_states.keys())
             if config["owner_id"] in i.voice_states.keys():
-                print(f"Connect to {i}")
                 vc = await i.connect()
                 connected = True
-                print(f"Connected to {i}")
                 await play_audio_in_voice()
         if not connected:
             i = client.get_channel(config["default_channel_id"])
-            print(f"Connect to {i}")
             vc = await i.connect()
-            print(f"Connected to {i}")
             await play_audio_in_voice()
         '''
         #client.loop.create_task(bg_task())
@@ -74,7 +83,8 @@ if __name__ == '__main__':
 
     async def play_audio_in_voice():
         vc.play(PyAudioPCM(), after=lambda e: print(f'Player error: {e}') if e else None)
-        vinylswitch.switch()
+        if vinylswitch.state == False:
+            vinylswitch.switch()
         vinylswitch.function_on = vc.resume
         vinylswitch.function_off = vc.pause
 
@@ -84,8 +94,22 @@ if __name__ == '__main__':
         try:
             await client.start(config["token"])
         except:
-            Label(window, text="Erreur lors de la connexion avec le token\nVérifiez le token et redémarrez", fg="red")\
+            Label(window, text="Error while logging in with token\nCheck token and restart", fg="red",
+                  font=("System", 16)) \
                 .place(x=400, y=175, anchor='c')
+
+
+    @async_handler
+    async def connect_to_owner():
+        global vc
+        for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
+            if config["owner_id"] in i.voice_states.keys():
+                await vc.disconnect()
+                vc = await i.connect()
+                await play_audio_in_voice()
+
+    button_connect_to_owner = Button(text="Connect to owner's voice channel", font=("System", 15), bg="#F5C110", fg="#0A062E", relief="flat", command=connect_to_owner)
+    button_connect_to_owner.place(x=10, y=90)
 
 
     window.after(0, client_start)
