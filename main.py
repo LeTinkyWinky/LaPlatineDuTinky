@@ -4,6 +4,19 @@ import discord
 import pyaudio
 from utilitaries import *
 from async_tkinter_loop import async_mainloop, async_handler
+import os
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 
 if __name__ == '__main__':
 
@@ -11,6 +24,7 @@ if __name__ == '__main__':
     window.config(bg="#0A062E", width=800, height=350)
     window.title("La Platine du turfu")
     window.resizable(0, 0)
+    window.iconphoto(False, PhotoImage(file=resource_path('icon/icon.png')))
     vinylswitch = VinylSwitch(window)
     vinylswitch.place(x=0, y=350, anchor='sw')
     window.update()
@@ -23,10 +37,10 @@ if __name__ == '__main__':
     intents = discord.Intents().default()
     client = discord.Client(intents=intents)
 
-    file = open('C:/Users/cedri/OneDrive/NSI/DiscordPy/vinyles.csv', 'r')
+    '''file = open('C:/Users/cedri/OneDrive/NSI/DiscordPy/vinyles.csv', 'r')
     data = file.read()
     file.close()
-    vinyles = data.split('\n')
+    vinyles = data.split('\n')'''
 
     config = {}
     with open("config.ini", "r") as f:
