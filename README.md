@@ -1,7 +1,7 @@
 # LaPlatineDuTinky
 La Platine est une interface graphique pour gérer un bot discord audio.
 <br>
-![image](https://user-images.githubusercontent.com/104074343/229366817-d1d3d041-2b2f-45d5-8806-76582e3f2c93.png)
+![image](https://user-images.githubusercontent.com/104074343/229389670-79b27c2a-a928-4bb4-8860-964a1d6d789e.png)
 
 Pour faire fonctionner la Platine, veillez à remplir correctement ces 3 paramètres du fichier `config.ini`:
 
