@@ -17,6 +17,7 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+
 @async_handler
 async def device_callback(*args):
     config["input_device"] = int(device_choice.get().split(' - ')[0])
@@ -25,12 +26,26 @@ async def device_callback(*args):
     except:
         pass
 
+
+@async_handler
+async def status_callback(*args):
+    try:
+        status = status_choice.get()
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=status))
+    except:
+        pass
+
 if __name__ == '__main__':
     config = {}
-    with open("config.ini", "r") as f:
+    with open("config.ini", 'r', encoding='utf8') as f:
         for line in f.readlines():
             key, arg = line[:-1].split('=')
             config[key] = int(arg) if arg.isdigit() else arg
+
+    vinyles_status = []
+    with open("vinyles.txt", 'r', encoding='utf8') as f:
+        for line in f.readlines():
+            vinyles_status.append(line.replace('\n', ''))
 
     window = Tk()
     window.config(bg="#0A062E", width=800, height=350)
@@ -45,6 +60,21 @@ if __name__ == '__main__':
     status_label.place(x=10, y=30)
     voice_status_label = Label(text="Connected to no voice channel", font=("System", 15), fg="#F5C110", bg="#0A062E")
     voice_status_label.place(x=10, y=60)
+
+    discord_status_label = Label(text="Listening to :", font=("System", 15), fg="#F5C110", bg="#0A062E")
+    discord_status_label.place(x=373, y=30)
+
+    status_choice = StringVar(window)
+    status_choice.trace('w', status_callback)
+    status_menu = OptionMenu(window, variable=status_choice, value=vinyles_status)
+    status_menu.config(width=50, font=("System", 15), fg="#0A062E", bg="#F5C110", relief="flat", highlightthickness=0,
+                       highlightbackground="#F5C110", indicatoron=0)
+    status_menu.place(x=790, y=55, anchor="ne")
+    status_choice.set(vinyles_status[0])  # Définir le premier périphérique comme valeur par défaut dans le menu déroulant
+    status_menu['menu'].delete(0, 'end')  # Supprimer les anciens éléments du menu déroulant
+    for vinyle in vinyles_status:
+        status_menu['menu'].add_command(label=vinyle, command=lambda value=vinyle: status_choice.set(value))
+    status_menu['menu'].config(font=("System", 15), bg="#0A062E", fg="#DFDBED")
 
     devices = list_input_devices()
     device_choice = StringVar(window)
@@ -85,7 +115,7 @@ if __name__ == '__main__':
         vc = None
         status_label.config(text="Logged in as " + client.user.name)
         print(f'\n----------------------\nLogged in as {client.user}\n----------------------\n\n')
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='des vinyles'))
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=vinyles_status[0]))
         if config["auto_connect"]:
             connected = False
             for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
@@ -146,7 +176,7 @@ if __name__ == '__main__':
                 if vc != None and vc.is_connected():
                     await vc.disconnect()
                 vc = await i.connect()
-                await play_audio_in_voice()
+                device_callback()
 
     button_connect_to_owner = Button(text="Connect to owner's voice channel", font=("System", 15), bg="#F5C110",
                                      fg="#0A062E", relief="flat", command=connect_to_owner)
