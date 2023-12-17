@@ -131,12 +131,6 @@ if __name__ == '__main__':
         if vc:
             await device_callback()
             await device_callback()
-        '''
-        #client.loop.create_task(bg_task())
-        print('\nFaites votre choix:\n')
-        for i in range(len(vinyles)):
-            print(f'{i + 1}. {vinyles[i]}')
-        print('\nSaisissez le numéro du vinyle: ', end='')'''
 
 
     class PyAudioPCM(discord.AudioSource):
