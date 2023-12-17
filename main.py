@@ -17,8 +17,20 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+@async_handler
+async def device_callback(*args):
+    config["input_device"] = int(device_choice.get().split(' - ')[0])
+    try:
+        await play_audio_in_voice(input_device=config["input_device"]-1)
+    except:
+        pass
 
 if __name__ == '__main__':
+    config = {}
+    with open("config.ini", "r") as f:
+        for line in f.readlines():
+            key, arg = line[:-1].split('=')
+            config[key] = int(arg) if arg.isdigit() else arg
 
     window = Tk()
     window.config(bg="#0A062E", width=800, height=350)
@@ -34,6 +46,19 @@ if __name__ == '__main__':
     voice_status_label = Label(text="Connected to no voice channel", font=("System", 15), fg="#F5C110", bg="#0A062E")
     voice_status_label.place(x=10, y=60)
 
+    devices = list_input_devices()
+    device_choice = StringVar(window)
+    device_choice.trace('w', device_callback)
+    device_menu = OptionMenu(window, variable=device_choice, value=devices)
+    device_menu.config(width=50, font=("System", 15), fg="#0A062E", bg="#F5C110", relief="flat", highlightthickness=0,
+                       highlightbackground="#F5C110", indicatoron=0)
+    device_menu.place(x=790, y=340, anchor="se")
+    device_choice.set(devices[config["input_device"]-1])  # Définir le premier périphérique comme valeur par défaut dans le menu déroulant
+    device_menu['menu'].delete(0, 'end')  # Supprimer les anciens éléments du menu déroulant
+    for device in devices:
+        device_menu['menu'].add_command(label=device, command=lambda value=device: device_choice.set(value))
+    device_menu['menu'].config(font=("System", 15), bg="#0A062E", fg="#DFDBED")
+
     intents = discord.Intents().default()
     client = discord.Client(intents=intents)
 
@@ -41,13 +66,6 @@ if __name__ == '__main__':
     data = file.read()
     file.close()
     vinyles = data.split('\n')'''
-
-    config = {}
-    with open("config.ini", "r") as f:
-        for line in f.readlines():
-            key, arg = line[:-1].split('=')
-            config[key] = int(arg) if arg.isdigit() else arg
-
 
     @client.event
     async def on_voice_state_update(member, before, after):
@@ -75,13 +93,14 @@ if __name__ == '__main__':
                 if config["owner_id"] in i.voice_states.keys():
                     vc = await i.connect()
                     connected = True
-                    await play_audio_in_voice()
             if not connected:
                 i = client.get_channel(config["default_channel_id"])
                 vc = await i.connect()
-                await play_audio_in_voice()
         if not vinylswitch.state:
             vinylswitch.switch()
+        if vc:
+            await device_callback()
+            await device_callback()
         '''
         #client.loop.create_task(bg_task())
         print('\nFaites votre choix:\n')
@@ -101,8 +120,10 @@ if __name__ == '__main__':
             return self.input_stream.read(self.chunks)
 
 
-    async def play_audio_in_voice():
-        vc.play(PyAudioPCM(), after=lambda e: print(f'Player error: {e}') if e else None)
+    async def play_audio_in_voice(input_device=1):
+        vc.stop()
+        PCM = PyAudioPCM(input_device=input_device)
+        vc.play(PCM, after=lambda e: print(f'Player error: {e}') if e else None)
         vinylswitch.function_on = vc.resume
         vinylswitch.function_off = vc.pause
 
@@ -127,20 +148,25 @@ if __name__ == '__main__':
                 vc = await i.connect()
                 await play_audio_in_voice()
 
-    button_connect_to_owner = Button(text="Connect to owner's voice channel", font=("System", 15), bg="#F5C110", fg="#0A062E", relief="flat", command=connect_to_owner)
+    button_connect_to_owner = Button(text="Connect to owner's voice channel", font=("System", 15), bg="#F5C110",
+                                     fg="#0A062E", relief="flat", command=connect_to_owner)
     button_connect_to_owner.place(x=10, y=90)
 
     def f_switch_auto_connect(state):
         config["auto_connect"] = state
 
-    switch_auto_connect = Switch(window, text="Auto connect to owner's voice channel on startup", function_on=lambda: f_switch_auto_connect(1), function_off=lambda: f_switch_auto_connect(0))
+    switch_auto_connect = Switch(window, text="Auto connect to owner's voice channel on startup",
+                                 function_on=lambda: f_switch_auto_connect(1),
+                                 function_off=lambda: f_switch_auto_connect(0))
     if config["auto_connect"]: switch_auto_connect.switch()
     switch_auto_connect.place(x=400, y=100)
 
     def f_switch_follow_owner(state):
         config["follow_owner"] = state
 
-    switch_follow_owner = Switch(window, text="Follow owner if he changes voice channel", function_on=lambda: f_switch_follow_owner(1), function_off=lambda: f_switch_follow_owner(0))
+    switch_follow_owner = Switch(window, text="Follow owner if he changes voice channel",
+                                 function_on=lambda: f_switch_follow_owner(1),
+                                 function_off=lambda: f_switch_follow_owner(0))
     if config["follow_owner"]: switch_follow_owner.switch()
     switch_follow_owner.place(x=400, y=130)
 
