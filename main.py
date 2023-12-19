@@ -23,8 +23,8 @@ async def device_callback(*args):
     config["input_device"] = int(device_choice.get().split(' - ')[0])
     try:
         await play_audio_in_voice(input_device=config["input_device"]-1)
-    except:
-        pass
+    except Exception as error:
+        print("device error : ", error)
 
 
 @async_handler
@@ -46,6 +46,9 @@ if __name__ == '__main__':
     with open("vinyles.txt", 'r', encoding='utf8') as f:
         for line in f.readlines():
             vinyles_status.append(line.replace('\n', ''))
+
+    vc = None
+    PCM = None
 
     window = Tk()
     window.config(bg="#0A062E", width=800, height=350)
@@ -92,11 +95,6 @@ if __name__ == '__main__':
     intents = discord.Intents().default()
     client = discord.Client(intents=intents)
 
-    '''file = open('C:/Users/cedri/OneDrive/NSI/DiscordPy/vinyles.csv', 'r')
-    data = file.read()
-    file.close()
-    vinyles = data.split('\n')'''
-
     @client.event
     async def on_voice_state_update(member, before, after):
         if member == client.user:
@@ -112,14 +110,12 @@ if __name__ == '__main__':
     @client.event
     async def on_ready():
         global vc
-        vc = None
         status_label.config(text="Logged in as " + client.user.name)
         print(f'\n----------------------\nLogged in as {client.user}\n----------------------\n\n')
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=vinyles_status[0]))
         if config["auto_connect"]:
             connected = False
             for i in [i for i in client.get_all_channels() if i.type == discord.ChannelType.voice]:
-                # print(config["user_id"], '\n', i.voice_states.keys())
                 if config["owner_id"] in i.voice_states.keys():
                     vc = await i.connect()
                     connected = True
@@ -129,7 +125,6 @@ if __name__ == '__main__':
         if not vinylswitch.state:
             vinylswitch.switch()
         if vc:
-            await device_callback()
             await device_callback()
 
 
@@ -145,8 +140,13 @@ if __name__ == '__main__':
 
 
     async def play_audio_in_voice(input_device=1):
-        vc.stop()
+        global PCM
+        if not vc:
+            return
+        if vc.is_playing():
+            vc.stop()
         PCM = PyAudioPCM(input_device=input_device)
+        discord.opus.load_opus('./libopus-0.64.dll')
         vc.play(PCM, after=lambda e: print(f'Player error: {e}') if e else None)
         vinylswitch.function_on = vc.resume
         vinylswitch.function_off = vc.pause
