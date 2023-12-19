@@ -1,7 +1,8 @@
 # LaPlatineDuTinky
 La Platine est une interface graphique pour gérer un bot discord audio.
 <br>
-![image](https://user-images.githubusercontent.com/104074343/229389670-79b27c2a-a928-4bb4-8860-964a1d6d789e.png)
+![image](https://github.com/LeTinkyWinky/LaPlatineDuTinky/assets/104074343/e779751f-50cd-45f1-aafc-34cab9f421df)
+
 
 Pour faire fonctionner la Platine, veillez à remplir correctement ces 3 paramètres du fichier `config.ini`:
 
@@ -51,12 +52,11 @@ En faisant un clic droit sur le salon que vous voulez définir comme par défaut
 - Peut activer ou désactiver le son sortant du bot avec un switch ressemblant à un vinyle
 - Un switch permettant d'activer l'auto-connexion au salon vocal où se trouve son propriétaire au démarrage
 - Un switch permettant d'activer le suivi du propriétaire lorsqu'il change de salon vocal
+- Sélection de vinyle parmi une bibliothèque pour mettre en status discord
+- Sélection de périphérique audio
 
 <br>
 
 ## A faire :
-- Sélection de vinyle parmi une bibliothèque pour mettre en status discord
-- Sélection de périphérique audio (pour l'instant il utilise le microphone par défaut de l'ordinateur)
-- Un switch permettant d'activer l'auto-play au lancement
 - Un switch permettant d'activer le mode "lite" (désactiver les animations)
 - Un champ de saisie pour un status discord personnalisé
